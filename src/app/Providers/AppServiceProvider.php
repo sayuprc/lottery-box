@@ -8,7 +8,7 @@ use Illuminate\Support\ServiceProvider;
 use Support\Application\Config;
 use Support\Application\UlidGenerator;
 use Support\Ulid\UlidGeneratorInterface;
-use Suuport\Config\ConfigInterface;
+use Support\Config\ConfigInterface;
 
 class AppServiceProvider extends ServiceProvider
 {

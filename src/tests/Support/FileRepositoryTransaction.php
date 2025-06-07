@@ -9,7 +9,7 @@ use Mockery;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SplFileInfo;
-use Suuport\Config\ConfigInterface;
+use Support\Config\ConfigInterface;
 
 trait FileRepositoryTransaction
 {

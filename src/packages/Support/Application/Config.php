@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Support\Application;
 
 use RuntimeException;
-use Suuport\Config\ConfigInterface;
+use Support\Config\ConfigInterface;
 
 class Config implements ConfigInterface
 {

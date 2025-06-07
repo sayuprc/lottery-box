@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Suuport\Config;
+namespace Support\Config;
 
 interface ConfigInterface
 {
