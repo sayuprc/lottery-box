@@ -1,0 +1,12 @@
+services:
+  php:
+    image: lottery-box:8.4
+    container_name: lottery-box
+    environment:
+      LANG: ja_JP.UTF-8
+      TZ: Asia/Tokyo
+    ports:
+      - 443:443
+    volumes:
+      - ./src:/app
+      - ./docker/php/php.ini:/usr/local/etc/php/php.ini
