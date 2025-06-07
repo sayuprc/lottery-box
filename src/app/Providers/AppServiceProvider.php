@@ -6,6 +6,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Support\Application\Config;
+use Support\Application\UlidGenerator;
+use Support\Ulid\UlidGeneratorInterface;
 use Suuport\Config\ConfigInterface;
 
 class AppServiceProvider extends ServiceProvider
@@ -16,6 +18,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(ConfigInterface::class, Config::class);
+        $this->app->bind(UlidGeneratorInterface::class, UlidGenerator::class);
     }
 
     /**
