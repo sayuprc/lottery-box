@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Support\Application;
 
 use Illuminate\Support\Str;
-use Support\Ulid\UlidGeneratorInterface;
+use Support\Contracts\UlidGeneratorInterface;
 
 class UlidGenerator implements UlidGeneratorInterface
 {

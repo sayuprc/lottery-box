@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Support\Ulid;
+namespace Support\Contracts;
 
 interface UlidGeneratorInterface
 {

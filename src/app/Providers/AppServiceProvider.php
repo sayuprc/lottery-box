@@ -7,8 +7,8 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Support\Application\Config;
 use Support\Application\UlidGenerator;
-use Support\Ulid\UlidGeneratorInterface;
-use Support\Config\ConfigInterface;
+use Support\Contracts\ConfigInterface;
+use Support\Contracts\UlidGeneratorInterface;
 
 class AppServiceProvider extends ServiceProvider
 {
