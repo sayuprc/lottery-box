@@ -41,7 +41,7 @@ class LotteryBoxNameDuplicateCheckServiceTest extends TestCase
     {
         $this->repository->shouldReceive('findByBoxName')
             ->with(Mockery::on(fn (BoxName $arg) => $arg->value === '抽選箱'))
-            ->andReturnUsing(fn () => new LotteryBox(new BoxId(str_repeat('a', 26)), new BoxName('抽選箱'), []))
+            ->andReturnUsing(fn () => new LotteryBox(new BoxId(str_repeat('a', 26)), new BoxName('抽選箱')))
             ->once();
 
         $this->assertTrue($this->getInstance()->exists(new BoxName('抽選箱')));

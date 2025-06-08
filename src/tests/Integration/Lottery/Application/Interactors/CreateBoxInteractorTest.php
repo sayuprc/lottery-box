@@ -35,7 +35,7 @@ class CreateBoxInteractorTest extends TestCase
     {
         $name = '抽選箱';
 
-        $lotteryBox = new LotteryBox(new BoxId(str_repeat('a', 26)), new BoxName($name), []);
+        $lotteryBox = new LotteryBox(new BoxId(str_repeat('a', 26)), new BoxName($name));
         $this->factory(FileLotteryBoxRepository::class, $lotteryBox->boxId->value, $lotteryBox);
 
         $result = $this->getInteractor()->handle(new CreateBoxInput($name));
