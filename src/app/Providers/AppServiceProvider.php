@@ -8,9 +8,11 @@ use Illuminate\Support\ServiceProvider;
 use Lottery\Application\Interactors\AddItemToBoxInteractor;
 use Lottery\Application\Interactors\CreateBoxInteractor;
 use Lottery\Application\Interactors\CreateItemInteractor;
+use Lottery\Application\Interactors\LotteryInteractor;
 use Lottery\Application\UseCase\AddItemToBox\AddItemToBoxInputPort;
 use Lottery\Application\UseCase\CreateBox\CreateBoxInputPort;
 use Lottery\Application\UseCase\CreateItem\CreateItemInputPort;
+use Lottery\Application\UseCase\Lottery\LotteryInputPort;
 use Lottery\DebugInfrastructures\FileBoxItemRepository;
 use Lottery\DebugInfrastructures\FileLotteryBoxRepository;
 use Lottery\DebugInfrastructures\FileLotteryItemRepository;
@@ -52,6 +54,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(BoxItemRepositoryInterface::class, FileBoxItemRepository::class);
 
         $this->app->bind(AddItemToBoxInputPort::class, AddItemToBoxInteractor::class);
+
+        $this->app->bind(LotteryInputPort::class, LotteryInteractor::class);
     }
 
     /**
