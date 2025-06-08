@@ -6,4 +6,5 @@ namespace Lottery\Domain\Models\LotteryBox;
 
 interface LotteryBoxRepositoryInterface
 {
+    public function findByBoxName(BoxName $boxName): ?LotteryBox;
 }
