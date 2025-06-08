@@ -48,12 +48,30 @@ class FileLotteryBoxRepositoryTest extends TestCase
     {
         $this->store->shouldReceive('getAll')
             ->with('/lottery-box.dat')
-            ->andReturn([
-                new LotteryBox(new BoxId(str_repeat('a', 26)), new BoxName('抽選箱2'), []),
-            ])
+            ->andReturn([])
             ->once();
 
         $this->assertNull($this->getInstance()->findByBoxName(new BoxName('抽選箱')));
+    }
+
+    #[Test]
+    public function saved(): void
+    {
+        $lotteryBox = new LotteryBox(new BoxId(str_repeat('a', 26)), new BoxName('抽選箱2'), []);
+
+        $this->store->shouldReceive('put')
+            ->with(
+                '/lottery-box.dat',
+                $lotteryBox->boxId->value,
+                Mockery::on(
+                    fn (LotteryBox $arg) => $arg->boxId->value === $lotteryBox->boxId->value
+                        && $arg->boxName->value === $lotteryBox->boxName->value
+                        && $arg->lotteryItemIds === $lotteryBox->lotteryItemIds
+                )
+            )
+            ->once();
+
+        $this->getInstance()->save($lotteryBox);
     }
 
     private function getInstance(): FileLotteryBoxRepository

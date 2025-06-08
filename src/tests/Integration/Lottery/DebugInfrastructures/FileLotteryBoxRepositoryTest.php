@@ -32,6 +32,21 @@ class FileLotteryBoxRepositoryTest extends TestCase
         $this->assertNull($this->getInstance()->findByBoxName(new BoxName('抽選箱')));
     }
 
+    #[Test]
+    public function saved(): void
+    {
+        $lotteryBox = new LotteryBox(new BoxId(str_repeat('a', 26)), new BoxName('抽選箱2'), []);
+
+        $this->getInstance()->save($lotteryBox);
+
+        /** @var array<string, LotteryBox> $boxes */
+        $boxes = $this->getAll(FileLotteryBoxRepository::class);
+
+        $this->assertCount(1, $boxes);
+        $this->assertArrayHasKey($lotteryBox->boxId->value, $boxes);
+        $this->assertSame($lotteryBox->boxId->value, $boxes[$lotteryBox->boxId->value]->boxId->value);
+    }
+
     private function getInstance(): FileLotteryBoxRepository
     {
         return $this->app->make(FileLotteryBoxRepository::class);

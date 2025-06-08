@@ -36,4 +36,9 @@ class FileLotteryBoxRepository implements LotteryBoxRepositoryInterface
 
         return null;
     }
+
+    public function save(LotteryBox $lotteryBox): void
+    {
+        $this->store->put($this->filePath, $lotteryBox->boxId->value, $lotteryBox);
+    }
 }

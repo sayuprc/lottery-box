@@ -69,13 +69,23 @@ trait FileRepositoryTransaction
         return self::FILE_DIR . '/' . $this->name();
     }
 
-    /**
-     * @template T
-     *
-     * @param class-string<T> $repository
-     * @param T               $value
-     */
     private function factory(string $repository, int|string $key, mixed $value): void
+    {
+        /** @var FileStore $store */
+        $store = $this->app->make(FileStore::class);
+
+        $store->put($this->getFileName($repository), $key, $value);
+    }
+
+    private function getAll(string $repository): array
+    {
+        /** @var FileStore $store */
+        $store = $this->app->make(FileStore::class);
+
+        return $store->getAll($this->getFileName($repository));
+    }
+
+    private function getFileName(string $repository): string
     {
         $fileName = new ReflectionClass($repository)->getConstant('FILE_NAME');
 
@@ -83,9 +93,6 @@ trait FileRepositoryTransaction
             throw new RuntimeException('リポジトリに FILE_NAME 定数が設定されていません。');
         }
 
-        /** @var FileStore $store */
-        $store = $this->app->make(FileStore::class);
-
-        $store->put($this->getDirectoryName() . '/' . $fileName, $key, $value);
+        return $this->getDirectoryName() . '/' . $fileName;
     }
 }
