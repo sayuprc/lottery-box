@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Lottery\Application\Interactors\AddItemToBoxInteractor;
 use Lottery\Application\Interactors\CreateBoxInteractor;
 use Lottery\Application\Interactors\CreateItemInteractor;
+use Lottery\Application\UseCase\AddItemToBox\AddItemToBoxInputPort;
 use Lottery\Application\UseCase\CreateBox\CreateBoxInputPort;
 use Lottery\Application\UseCase\CreateItem\CreateItemInputPort;
 use Lottery\DebugInfrastructures\FileBoxItemRepository;
@@ -45,6 +47,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(CreateItemInputPort::class, CreateItemInteractor::class);
 
         $this->app->bind(BoxItemRepositoryInterface::class, FileBoxItemRepository::class);
+
+        $this->app->bind(AddItemToBoxInputPort::class, AddItemToBoxInteractor::class);
     }
 
     /**
