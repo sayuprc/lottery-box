@@ -6,4 +6,5 @@ namespace Lottery\Domain\Models\LotteryItem;
 
 interface LotteryItemRepositoryInterface
 {
+    public function findByItemName(ItemName $itemName): ?LotteryItem;
 }
