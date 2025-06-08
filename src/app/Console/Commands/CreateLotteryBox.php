@@ -14,18 +14,26 @@ class CreateLotteryBox extends Command
 
     protected $description = 'Command description';
 
-    public function handle(CreateBoxInputPort $handler): void
+    public function handle(CreateBoxInputPort $handler): int
     {
         $boxName = $this->argument('boxName');
 
         if (! is_string($boxName) || mb_trim($boxName) === '') {
             $this->error('抽選箱名を入力してください。');
 
-            return;
+            return Command::FAILURE;
         }
 
-        $handler->handle(new CreateBoxInput($boxName));
+        $result = $handler->handle(new CreateBoxInput($boxName));
+
+        if ($result->isErr()) {
+            $this->error($result->unwrapErr());
+
+            return Command::FAILURE;
+        }
 
         $this->info("抽選箱「{$boxName}」を作成しました。");
+
+        return Command::SUCCESS;
     }
 }
