@@ -30,6 +30,28 @@ class FileLotteryItemRepositoryTest extends TestCase
     }
 
     #[Test]
+    public function found(): void
+    {
+        $this->store->shouldReceive('get')
+            ->with('/lottery-item.dat', str_repeat('a', 26))
+            ->andReturn(new LotteryItem(new ItemId(str_repeat('a', 26)), new ItemName('抽選アイテム')))
+            ->once();
+
+        $this->assertInstanceOf(LotteryItem::class, $this->getInstance()->find(new ItemId(str_repeat('a', 26))));
+    }
+
+    #[Test]
+    public function notFound(): void
+    {
+        $this->store->shouldReceive('get')
+            ->with('/lottery-item.dat', str_repeat('a', 26))
+            ->andReturnNull()
+            ->once();
+
+        $this->assertNull($this->getInstance()->find(new ItemId(str_repeat('a', 26))));
+    }
+
+    #[Test]
     public function foundByItemName(): void
     {
         $this->store->shouldReceive('getAll')

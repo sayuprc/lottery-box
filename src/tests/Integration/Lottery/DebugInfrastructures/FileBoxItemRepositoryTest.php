@@ -34,6 +34,31 @@ class FileBoxItemRepositoryTest extends TestCase
         $this->assertSame($boxItem->itemId->value, $boxItems[$key]->itemId->value);
     }
 
+    #[Test]
+    public function getByBoxId(): void
+    {
+        $boxId = new BoxId(str_repeat('a', 26));
+        $boxItem = new BoxItem($boxId, new ItemId(str_repeat('b', 26)));
+
+        $this->factory(FileBoxItemRepository::class, $boxItem->boxId->value . '-' . $boxItem->itemId->value, $boxItem);
+
+        $result = $this->getInstance()->getByBoxId($boxId);
+
+        $this->assertCount(1, $result);
+        $this->assertSame($boxId->value, $result[0]->boxId->value);
+        $this->assertSame(str_repeat('b', 26), $result[0]->itemId->value);
+    }
+
+    #[Test]
+    public function getByBoxIdFromEmpty(): void
+    {
+        $boxId = new BoxId(str_repeat('a', 26));
+
+        $result = $this->getInstance()->getByBoxId($boxId);
+
+        $this->assertCount(0, $result);
+    }
+
     private function getInstance(): FileBoxItemRepository
     {
         return $this->app->make(FileBoxItemRepository::class);
