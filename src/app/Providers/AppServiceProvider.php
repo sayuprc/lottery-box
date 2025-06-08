@@ -6,7 +6,9 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Lottery\Application\Interactors\CreateBoxInteractor;
+use Lottery\Application\Interactors\CreateItemInteractor;
 use Lottery\Application\UseCase\CreateBox\CreateBoxInputPort;
+use Lottery\Application\UseCase\CreateItem\CreateItemInputPort;
 use Lottery\DebugInfrastructures\FileLotteryBoxRepository;
 use Lottery\DebugInfrastructures\FileLotteryItemRepository;
 use Lottery\Domain\Models\LotteryBox\LotteryBoxFactoryInterface;
@@ -37,6 +39,8 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(LotteryItemFactoryInterface::class, LotteryItemFactory::class);
         $this->app->bind(LotteryItemRepositoryInterface::class, FileLotteryItemRepository::class);
+
+        $this->app->bind(CreateItemInputPort::class, CreateItemInteractor::class);
     }
 
     /**
