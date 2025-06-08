@@ -32,6 +32,22 @@ class FileLotteryItemRepositoryTest extends TestCase
         $this->assertNull($this->getInstance()->findByItemName(new ItemName('抽選アイテム')));
     }
 
+    #[Test]
+    public function saved(): void
+    {
+        $lotteryItem = new LotteryItem(new ItemId(str_repeat('a', 26)), new ItemName('抽選アイテム2'));
+
+        $this->getInstance()->save($lotteryItem);
+
+        /** @var array<string, LotteryItem> $items */
+        $items = $this->getAll(FileLotteryItemRepository::class);
+
+        $this->assertCount(1, $items);
+        $this->assertArrayHasKey($lotteryItem->itemId->value, $items);
+        $this->assertSame($lotteryItem->itemId->value, $items[$lotteryItem->itemId->value]->itemId->value);
+        $this->assertSame($lotteryItem->itemName->value, $items[$lotteryItem->itemId->value]->itemName->value);
+    }
+
     private function getInstance(): FileLotteryItemRepository
     {
         return $this->app->make(FileLotteryItemRepository::class);

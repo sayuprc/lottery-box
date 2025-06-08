@@ -54,6 +54,25 @@ class FileLotteryItemRepositoryTest extends TestCase
         $this->assertNull($this->getInstance()->findByItemName(new ItemName('抽選アイテム')));
     }
 
+    #[Test]
+    public function saved(): void
+    {
+        $lotteryItem = new LotteryItem(new ItemId(str_repeat('a', 26)), new ItemName('抽選アイテム2'));
+
+        $this->store->shouldReceive('put')
+            ->with(
+                '/lottery-item.dat',
+                $lotteryItem->itemId->value,
+                Mockery::on(
+                    fn (LotteryItem $arg) => $arg->itemId->value === $lotteryItem->itemId->value
+                        && $arg->itemName->value === $lotteryItem->itemName->value
+                )
+            )
+            ->once();
+
+        $this->getInstance()->save($lotteryItem);
+    }
+
     private function getInstance(): FileLotteryItemRepository
     {
         $this->config->shouldReceive('getString')
