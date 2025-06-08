@@ -2,4 +2,7 @@
 
 declare(strict_types=1);
 
-// TODO 実装する
+use App\Http\Controllers\Api\LotteryController;
+use Illuminate\Support\Facades\Route;
+
+Route::post('/lottery', [LotteryController::class, 'handle']);
