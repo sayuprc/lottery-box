@@ -17,6 +17,25 @@ class FileLotteryItemRepositoryTest extends TestCase
     use FileRepositoryTransaction;
 
     #[Test]
+    public function found(): void
+    {
+        $lotteryItem = new LotteryItem(new ItemId(str_repeat('a', 26)), new ItemName('抽選アイテム'));
+        $this->factory(FileLotteryItemRepository::class, $lotteryItem->itemId->value, $lotteryItem);
+
+        $found = $this->getInstance()->find(new ItemId(str_repeat('a', 26)));
+        $this->assertInstanceOf(LotteryItem::class, $found);
+
+        $this->assertSame($lotteryItem->itemId->value, $found->itemId->value);
+        $this->assertSame($lotteryItem->itemName->value, $found->itemName->value);
+    }
+
+    #[Test]
+    public function notFound(): void
+    {
+        $this->assertNull($this->getInstance()->find(new ItemId(str_repeat('a', 26))));
+    }
+
+    #[Test]
     public function foundByItemName(): void
     {
         $lotteryItem = new LotteryItem(new ItemId(str_repeat('a', 26)), new ItemName('抽選アイテム'));

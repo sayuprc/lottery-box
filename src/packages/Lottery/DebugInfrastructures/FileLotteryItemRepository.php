@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lottery\DebugInfrastructures;
 
+use Lottery\Domain\Models\LotteryItem\ItemId;
 use Lottery\Domain\Models\LotteryItem\ItemName;
 use Lottery\Domain\Models\LotteryItem\LotteryItem;
 use Lottery\Domain\Models\LotteryItem\LotteryItemRepositoryInterface;
@@ -24,6 +25,11 @@ class FileLotteryItemRepository implements LotteryItemRepositoryInterface
         private readonly ConfigInterface $config,
     ) {
         $this->filePath = $this->config->getString('debug.file.path') . '/' . self::FILE_NAME;
+    }
+
+    public function find(ItemId $itemId): ?LotteryItem
+    {
+        return $this->store->get($this->filePath, $itemId->value);
     }
 
     public function findByItemName(ItemName $itemName): ?LotteryItem

@@ -6,6 +6,7 @@ namespace Lottery\DebugInfrastructures;
 
 use Lottery\Domain\Models\BoxItem\BoxItem;
 use Lottery\Domain\Models\BoxItem\BoxItemRepositoryInterface;
+use Lottery\Domain\Models\LotteryBox\BoxId;
 use Support\Contracts\ConfigInterface;
 use Support\Debug\Repository\FileStore;
 
@@ -28,5 +29,17 @@ class FileBoxItemRepository implements BoxItemRepositoryInterface
     public function save(BoxItem $boxItem): void
     {
         $this->store->put($this->filePath, $boxItem->boxId->value . '-' . $boxItem->itemId->value, $boxItem);
+    }
+
+    public function getByBoxId(BoxId $boxId): array
+    {
+        $founds = [];
+        foreach ($this->store->getAll($this->filePath) as $key => $item) {
+            if (str_starts_with($key, $boxId->value)) {
+                $founds[] = $item;
+            }
+        }
+
+        return $founds;
     }
 }
