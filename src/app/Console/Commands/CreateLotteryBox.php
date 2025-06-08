@@ -12,7 +12,7 @@ class CreateLotteryBox extends Command
 {
     protected $signature = 'create:lottery-box {boxName}';
 
-    protected $description = 'Command description';
+    protected $description = '抽選箱を作成する';
 
     public function handle(CreateBoxInputPort $handler): int
     {
