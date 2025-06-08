@@ -33,7 +33,6 @@ class LotteryBoxFactoryTest extends TestCase
 
         $this->assertSame('aaaaaaaaaabbbbbbbbbb123456', $lotteryBox->boxId->value);
         $this->assertSame('抽選箱', $lotteryBox->boxName->value);
-        $this->assertCount(0, $lotteryBox->lotteryItemIds);
     }
 
     private function getInstance(): LotteryBoxFactory

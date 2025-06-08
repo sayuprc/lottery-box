@@ -21,7 +21,6 @@ class LotteryBoxFactory implements LotteryBoxFactoryInterface
         return new LotteryBox(
             new BoxId($this->generator->generate()),
             new BoxName($boxName),
-            []
         );
     }
 }

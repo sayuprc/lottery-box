@@ -26,7 +26,7 @@ class LotteryBoxNameDuplicateCheckServiceTest extends TestCase
     #[Test]
     public function duplicated(): void
     {
-        $lotteryBox = new LotteryBox(new BoxId(str_repeat('a', 26)), new BoxName('抽選箱'), []);
+        $lotteryBox = new LotteryBox(new BoxId(str_repeat('a', 26)), new BoxName('抽選箱'));
 
         $this->factory(FileLotteryBoxRepository::class, $lotteryBox->boxId->value, $lotteryBox);
 

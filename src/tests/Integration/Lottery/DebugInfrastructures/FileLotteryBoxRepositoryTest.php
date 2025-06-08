@@ -19,7 +19,7 @@ class FileLotteryBoxRepositoryTest extends TestCase
     #[Test]
     public function foundByBoxName(): void
     {
-        $lotteryBox = new LotteryBox(new BoxId(str_repeat('a', 26)), new BoxName('抽選箱'), []);
+        $lotteryBox = new LotteryBox(new BoxId(str_repeat('a', 26)), new BoxName('抽選箱'));
 
         $this->factory(FileLotteryBoxRepository::class, $lotteryBox->boxId->value, $lotteryBox);
 
@@ -35,7 +35,7 @@ class FileLotteryBoxRepositoryTest extends TestCase
     #[Test]
     public function saved(): void
     {
-        $lotteryBox = new LotteryBox(new BoxId(str_repeat('a', 26)), new BoxName('抽選箱2'), []);
+        $lotteryBox = new LotteryBox(new BoxId(str_repeat('a', 26)), new BoxName('抽選箱2'));
 
         $this->getInstance()->save($lotteryBox);
 

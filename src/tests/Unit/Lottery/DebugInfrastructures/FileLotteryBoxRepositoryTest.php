@@ -35,8 +35,8 @@ class FileLotteryBoxRepositoryTest extends TestCase
         $this->store->shouldReceive('getAll')
             ->with('/lottery-box.dat')
             ->andReturn([
-                new LotteryBox(new BoxId(str_repeat('a', 26)), new BoxName('抽選箱'), []),
-                new LotteryBox(new BoxId(str_repeat('b', 26)), new BoxName('抽選箱2'), []),
+                new LotteryBox(new BoxId(str_repeat('a', 26)), new BoxName('抽選箱')),
+                new LotteryBox(new BoxId(str_repeat('b', 26)), new BoxName('抽選箱2')),
             ])
             ->once();
 
@@ -57,7 +57,7 @@ class FileLotteryBoxRepositoryTest extends TestCase
     #[Test]
     public function saved(): void
     {
-        $lotteryBox = new LotteryBox(new BoxId(str_repeat('a', 26)), new BoxName('抽選箱2'), []);
+        $lotteryBox = new LotteryBox(new BoxId(str_repeat('a', 26)), new BoxName('抽選箱2'));
 
         $this->store->shouldReceive('put')
             ->with(
@@ -66,7 +66,6 @@ class FileLotteryBoxRepositoryTest extends TestCase
                 Mockery::on(
                     fn (LotteryBox $arg) => $arg->boxId->value === $lotteryBox->boxId->value
                         && $arg->boxName->value === $lotteryBox->boxName->value
-                        && $arg->lotteryItemIds === $lotteryBox->lotteryItemIds
                 )
             )
             ->once();

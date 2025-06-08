@@ -28,7 +28,7 @@ class CreateLotteryBoxTest extends TestCase
     #[Test]
     public function failedCreateLotteryBox(): void
     {
-        $lotteryBox = new LotteryBox(new BoxId(str_repeat('a', 26)), new BoxName('a'), []);
+        $lotteryBox = new LotteryBox(new BoxId(str_repeat('a', 26)), new BoxName('a'));
 
         $this->factory(FileLotteryBoxRepository::class, $lotteryBox->boxId->value, $lotteryBox);
 

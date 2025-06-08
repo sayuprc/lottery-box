@@ -16,7 +16,6 @@ class LotteryBoxFactoryTest extends TestCase
         $lotteryBox = $this->getInstance()->create('抽選箱');
 
         $this->assertSame('抽選箱', $lotteryBox->boxName->value);
-        $this->assertCount(0, $lotteryBox->lotteryItemIds);
     }
 
     private function getInstance(): LotteryBoxFactory
