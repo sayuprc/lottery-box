@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Lottery\Application\Interactors\CreateBoxInteractor;
+use Lottery\Application\UseCase\CreateBox\CreateBoxInputPort;
 use Lottery\DebugInfrastructures\FileLotteryBoxRepository;
 use Lottery\Domain\Models\LotteryBox\LotteryBoxFactoryInterface;
 use Lottery\Domain\Models\LotteryBox\LotteryBoxRepositoryInterface;
@@ -26,6 +28,8 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(LotteryBoxFactoryInterface::class, LotteryBoxFactory::class);
         $this->app->bind(LotteryBoxRepositoryInterface::class, FileLotteryBoxRepository::class);
+
+        $this->app->bind(CreateBoxInputPort::class, CreateBoxInteractor::class);
     }
 
     /**
