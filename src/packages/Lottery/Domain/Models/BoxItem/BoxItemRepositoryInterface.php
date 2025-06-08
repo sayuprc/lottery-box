@@ -6,4 +6,5 @@ namespace Lottery\Domain\Models\BoxItem;
 
 interface BoxItemRepositoryInterface
 {
+    public function save(BoxItem $boxItem): void;
 }
