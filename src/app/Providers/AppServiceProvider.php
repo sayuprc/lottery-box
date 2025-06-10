@@ -25,9 +25,11 @@ use Lottery\Infrastructures\LotteryBoxFactory;
 use Lottery\Infrastructures\LotteryItemFactory;
 use Support\Application\Config;
 use Support\Application\Mapper;
+use Support\Application\Transaction\NopTransaction;
 use Support\Application\UlidGenerator;
 use Support\Contracts\ConfigInterface;
 use Support\Contracts\MapperInterface;
+use Support\Contracts\TransactionInterface;
 use Support\Contracts\UlidGeneratorInterface;
 
 class AppServiceProvider extends ServiceProvider
@@ -40,6 +42,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ConfigInterface::class, Config::class);
         $this->app->bind(UlidGeneratorInterface::class, UlidGenerator::class);
         $this->app->bind(MapperInterface::class, Mapper::class);
+        $this->app->bind(TransactionInterface::class, NopTransaction::class);
 
         $this->app->bind(LotteryBoxFactoryInterface::class, LotteryBoxFactory::class);
         $this->app->bind(LotteryBoxRepositoryInterface::class, FileLotteryBoxRepository::class);

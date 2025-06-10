@@ -19,6 +19,7 @@ use Lottery\Domain\Services\LotteryBoxNameDuplicateCheckService;
 use Lottery\Domain\Services\LotteryItemNameDuplicateCheckService;
 use ResultType\Ok;
 use ResultType\Result;
+use Support\Contracts\TransactionInterface;
 
 class AddItemToBoxInteractor implements AddItemToBoxInputPort
 {
@@ -30,43 +31,46 @@ class AddItemToBoxInteractor implements AddItemToBoxInputPort
         private readonly LotteryItemNameDuplicateCheckService $lotteryItemNameDuplicateCheckService,
         private readonly LotteryItemRepositoryInterface $lotteryItemRepository,
         private readonly BoxItemRepositoryInterface $boxItemRepository,
+        private readonly TransactionInterface $transaction,
     ) {
     }
 
     public function handle(AddItemToBoxInput $input): Result
     {
-        $lotteryBox = $this->lotteryBoxFactory->create($input->boxName);
+        return $this->transaction->scope(function () use ($input) {
+            $lotteryBox = $this->lotteryBoxFactory->create($input->boxName);
 
-        if ($this->lotteryBoxNameDuplicateCheckService->exists($lotteryBox->boxName)) {
-            $lotteryBox = $this->lotteryBoxRepository->findByBoxName($lotteryBox->boxName);
-
-            // サービスで存在チェックをしているので null の可能性はない
-            assert($lotteryBox instanceof LotteryBox);
-        }
-
-        $this->lotteryBoxRepository->save($lotteryBox);
-
-        $boxItems = [];
-
-        foreach ($input->itemNames as $itemName) {
-            $lotteryItem = $this->lotteryItemFactory->create($itemName);
-
-            if ($this->lotteryItemNameDuplicateCheckService->exists($lotteryItem->itemName)) {
-                $lotteryItem = $this->lotteryItemRepository->findByItemName($lotteryItem->itemName);
+            if ($this->lotteryBoxNameDuplicateCheckService->exists($lotteryBox->boxName)) {
+                $lotteryBox = $this->lotteryBoxRepository->findByBoxName($lotteryBox->boxName);
 
                 // サービスで存在チェックをしているので null の可能性はない
-                assert($lotteryItem instanceof LotteryItem);
+                assert($lotteryBox instanceof LotteryBox);
             }
 
-            $this->lotteryItemRepository->save($lotteryItem);
+            $this->lotteryBoxRepository->save($lotteryBox);
 
-            $boxItems[] = new BoxItem($lotteryBox->boxId, $lotteryItem->itemId);
-        }
+            $boxItems = [];
 
-        foreach ($boxItems as $boxItem) {
-            $this->boxItemRepository->save($boxItem);
-        }
+            foreach ($input->itemNames as $itemName) {
+                $lotteryItem = $this->lotteryItemFactory->create($itemName);
 
-        return new Ok(new AddItemToBoxOutput());
+                if ($this->lotteryItemNameDuplicateCheckService->exists($lotteryItem->itemName)) {
+                    $lotteryItem = $this->lotteryItemRepository->findByItemName($lotteryItem->itemName);
+
+                    // サービスで存在チェックをしているので null の可能性はない
+                    assert($lotteryItem instanceof LotteryItem);
+                }
+
+                $this->lotteryItemRepository->save($lotteryItem);
+
+                $boxItems[] = new BoxItem($lotteryBox->boxId, $lotteryItem->itemId);
+            }
+
+            foreach ($boxItems as $boxItem) {
+                $this->boxItemRepository->save($boxItem);
+            }
+
+            return new Ok(new AddItemToBoxOutput());
+        });
     }
 }

@@ -13,26 +13,30 @@ use Lottery\Domain\Services\LotteryBoxNameDuplicateCheckService;
 use ResultType\Err;
 use ResultType\Ok;
 use ResultType\Result;
+use Support\Contracts\TransactionInterface;
 
 class CreateBoxInteractor implements CreateBoxInputPort
 {
     public function __construct(
         private readonly LotteryBoxFactoryInterface $factory,
         private readonly LotteryBoxRepositoryInterface $repository,
-        private readonly LotteryBoxNameDuplicateCheckService $service
+        private readonly LotteryBoxNameDuplicateCheckService $service,
+        private readonly TransactionInterface $transaction,
     ) {
     }
 
     public function handle(CreateBoxInput $input): Result
     {
-        $lotteryBox = $this->factory->create($input->boxName);
+        return $this->transaction->scope(function () use ($input) {
+            $lotteryBox = $this->factory->create($input->boxName);
 
-        if ($this->service->exists($lotteryBox->boxName)) {
-            return new Err("すでに同名の抽選箱が存在します。: {$lotteryBox->boxName->value}");
-        }
+            if ($this->service->exists($lotteryBox->boxName)) {
+                return new Err("すでに同名の抽選箱が存在します。: {$lotteryBox->boxName->value}");
+            }
 
-        $this->repository->save($lotteryBox);
+            $this->repository->save($lotteryBox);
 
-        return new Ok(new CreateBoxOutput());
+            return new Ok(new CreateBoxOutput());
+        });
     }
 }

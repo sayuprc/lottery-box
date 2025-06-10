@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Lottery\Application\Interactors;
 
+use Closure;
 use Lottery\Application\Interactors\CreateBoxInteractor;
 use Lottery\Application\UseCase\CreateBox\CreateBoxInput;
 use Lottery\Application\UseCase\CreateBox\CreateBoxOutput;
@@ -16,6 +17,7 @@ use Lottery\Domain\Services\LotteryBoxNameDuplicateCheckService;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Test;
+use Support\Contracts\TransactionInterface;
 use Tests\TestCase;
 
 class CreateBoxInteractorTest extends TestCase
@@ -26,6 +28,8 @@ class CreateBoxInteractorTest extends TestCase
 
     private LotteryBoxNameDuplicateCheckService&MockInterface $service;
 
+    private MockInterface&TransactionInterface $transaction;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -33,6 +37,7 @@ class CreateBoxInteractorTest extends TestCase
         $this->factory = Mockery::mock(LotteryBoxFactoryInterface::class);
         $this->repository = Mockery::mock(LotteryBoxRepositoryInterface::class);
         $this->service = Mockery::mock(LotteryBoxNameDuplicateCheckService::class);
+        $this->transaction = Mockery::mock(TransactionInterface::class);
     }
 
     #[Test]
@@ -57,6 +62,11 @@ class CreateBoxInteractorTest extends TestCase
 
         $this->repository->shouldReceive('save')
             ->with(Mockery::on(fn (LotteryBox $arg) => $arg->boxId->value === $id && $arg->boxName->value === $name))
+            ->once();
+
+        $this->transaction->shouldReceive('scope')
+            ->with(Mockery::on(fn (Closure $arg) => true))
+            ->andReturnUsing(fn (Closure $arg) => $arg())
             ->once();
 
         $result = $this->getInteractor()->handle(new CreateBoxInput($name));
@@ -85,6 +95,11 @@ class CreateBoxInteractorTest extends TestCase
             ->andReturnTrue()
             ->once();
 
+        $this->transaction->shouldReceive('scope')
+            ->with(Mockery::on(fn (Closure $arg) => true))
+            ->andReturnUsing(fn (Closure $arg) => $arg())
+            ->once();
+
         $result = $this->getInteractor()->handle(new CreateBoxInput($name));
 
         $this->assertTrue($result->isErr());
@@ -96,7 +111,8 @@ class CreateBoxInteractorTest extends TestCase
         return new CreateBoxInteractor(
             $this->factory,
             $this->repository,
-            $this->service
+            $this->service,
+            $this->transaction,
         );
     }
 }

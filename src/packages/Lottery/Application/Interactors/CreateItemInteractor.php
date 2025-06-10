@@ -13,26 +13,30 @@ use Lottery\Domain\Services\LotteryItemNameDuplicateCheckService;
 use ResultType\Err;
 use ResultType\Ok;
 use ResultType\Result;
+use Support\Contracts\TransactionInterface;
 
 class CreateItemInteractor implements CreateItemInputPort
 {
     public function __construct(
         private readonly LotteryItemFactoryInterface $factory,
         private readonly LotteryItemRepositoryInterface $repository,
-        private readonly LotteryItemNameDuplicateCheckService $service
+        private readonly LotteryItemNameDuplicateCheckService $service,
+        private readonly TransactionInterface $transaction,
     ) {
     }
 
     public function handle(CreateItemInput $input): Result
     {
-        $lotteryItem = $this->factory->create($input->itemName);
+        return $this->transaction->scope(function () use ($input) {
+            $lotteryItem = $this->factory->create($input->itemName);
 
-        if ($this->service->exists($lotteryItem->itemName)) {
-            return new Err("すでに同名の抽選アイテムが存在します。: {$lotteryItem->itemName->value}");
-        }
+            if ($this->service->exists($lotteryItem->itemName)) {
+                return new Err("すでに同名の抽選アイテムが存在します。: {$lotteryItem->itemName->value}");
+            }
 
-        $this->repository->save($lotteryItem);
+            $this->repository->save($lotteryItem);
 
-        return new Ok(new CreateItemOutput());
+            return new Ok(new CreateItemOutput());
+        });
     }
 }
