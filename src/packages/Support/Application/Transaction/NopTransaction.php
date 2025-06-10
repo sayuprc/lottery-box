@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Support\Application\transaction;
+namespace Support\Application\Transaction;
 
 use Closure;
 use Support\Contracts\TransactionInterface;

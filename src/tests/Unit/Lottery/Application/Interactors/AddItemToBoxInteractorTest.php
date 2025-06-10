@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Lottery\Application\Interactors;
 
+use Closure;
 use Lottery\Application\Interactors\AddItemToBoxInteractor;
 use Lottery\Application\UseCase\AddItemToBox\AddItemToBoxInput;
 use Lottery\Application\UseCase\AddItemToBox\AddItemToBoxOutput;
@@ -24,6 +25,7 @@ use Lottery\Domain\Services\LotteryItemNameDuplicateCheckService;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Test;
+use Support\Contracts\TransactionInterface;
 use Tests\TestCase;
 
 class AddItemToBoxInteractorTest extends TestCase
@@ -42,6 +44,8 @@ class AddItemToBoxInteractorTest extends TestCase
 
     private BoxItemRepositoryInterface&MockInterface $boxItemRepository;
 
+    private MockInterface&TransactionInterface $transaction;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -53,6 +57,7 @@ class AddItemToBoxInteractorTest extends TestCase
         $this->lotteryItemNameDuplicateCheckService = Mockery::mock(LotteryItemNameDuplicateCheckService::class);
         $this->lotteryItemRepository = Mockery::mock(LotteryItemRepositoryInterface::class);
         $this->boxItemRepository = Mockery::mock(BoxItemRepositoryInterface::class);
+        $this->transaction = Mockery::mock(TransactionInterface::class);
     }
 
     #[Test]
@@ -94,6 +99,11 @@ class AddItemToBoxInteractorTest extends TestCase
 
         $this->boxItemRepository->shouldReceive('save')
             ->with(Mockery::on(fn (BoxItem $arg) => $arg->boxId->value === $boxId && $arg->itemId->value === $itemId))
+            ->once();
+
+        $this->transaction->shouldReceive('scope')
+            ->with(Mockery::on(fn (Closure $arg) => true))
+            ->andReturnUsing(fn (Closure $arg) => $arg())
             ->once();
 
         $result = $this->getInstance()->handle(new AddItemToBoxInput($boxName, [$itemName]));
@@ -155,6 +165,11 @@ class AddItemToBoxInteractorTest extends TestCase
             ->with(Mockery::on(fn (BoxItem $arg) => $arg->boxId->value === $foundBoxId && $arg->itemId->value === $foundItemxId))
             ->once();
 
+        $this->transaction->shouldReceive('scope')
+            ->with(Mockery::on(fn (Closure $arg) => true))
+            ->andReturnUsing(fn (Closure $arg) => $arg())
+            ->once();
+
         $result = $this->getInstance()->handle(new AddItemToBoxInput($boxName, [$itemName]));
 
         $this->assertTrue($result->isOk());
@@ -171,6 +186,7 @@ class AddItemToBoxInteractorTest extends TestCase
             $this->lotteryItemNameDuplicateCheckService,
             $this->lotteryItemRepository,
             $this->boxItemRepository,
+            $this->transaction,
         );
     }
 }

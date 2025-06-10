@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Lottery\Application\Interactors;
 
+use Closure;
 use Lottery\Application\Interactors\CreateItemInteractor;
 use Lottery\Application\UseCase\CreateItem\CreateItemInput;
 use Lottery\Application\UseCase\CreateItem\CreateItemOutput;
@@ -16,6 +17,7 @@ use Lottery\Domain\Services\LotteryItemNameDuplicateCheckService;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Test;
+use Support\Contracts\TransactionInterface;
 use Tests\TestCase;
 
 class CreateItemInteractorTest extends TestCase
@@ -26,6 +28,8 @@ class CreateItemInteractorTest extends TestCase
 
     private LotteryItemNameDuplicateCheckService&MockInterface $service;
 
+    private MockInterface&TransactionInterface $transaction;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -33,6 +37,7 @@ class CreateItemInteractorTest extends TestCase
         $this->factory = Mockery::mock(LotteryItemFactoryInterface::class);
         $this->repository = Mockery::mock(LotteryItemRepositoryInterface::class);
         $this->service = Mockery::mock(LotteryItemNameDuplicateCheckService::class);
+        $this->transaction = Mockery::mock(TransactionInterface::class);
     }
 
     #[Test]
@@ -53,6 +58,11 @@ class CreateItemInteractorTest extends TestCase
 
         $this->repository->shouldReceive('save')
             ->with(Mockery::on(fn (LotteryItem $arg) => $arg->itemId->value === $id && $arg->itemName->value === $name))
+            ->once();
+
+        $this->transaction->shouldReceive('scope')
+            ->with(Mockery::on(fn (Closure $arg) => true))
+            ->andReturnUsing(fn (Closure $arg) => $arg())
             ->once();
 
         $result = $this->getInstance()->handle(new CreateItemInput($name));
@@ -77,6 +87,11 @@ class CreateItemInteractorTest extends TestCase
             ->andReturnTrue()
             ->once();
 
+        $this->transaction->shouldReceive('scope')
+            ->with(Mockery::on(fn (Closure $arg) => true))
+            ->andReturnUsing(fn (Closure $arg) => $arg())
+            ->once();
+
         $result = $this->getInstance()->handle(new CreateItemInput($name));
 
         $this->assertTrue($result->isErr());
@@ -88,7 +103,8 @@ class CreateItemInteractorTest extends TestCase
         return new CreateItemInteractor(
             $this->factory,
             $this->repository,
-            $this->service
+            $this->service,
+            $this->transaction,
         );
     }
 }
