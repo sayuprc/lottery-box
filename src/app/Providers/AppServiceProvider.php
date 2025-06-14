@@ -14,9 +14,11 @@ use Lottery\Application\UseCase\CreateBox\CreateBoxInputPort;
 use Lottery\Application\UseCase\CreateItem\CreateItemInputPort;
 use Lottery\Application\UseCase\Lottery\LotteryInputPort;
 use Lottery\DebugInfrastructures\FileBoxItemRepository;
+use Lottery\DebugInfrastructures\FileDrawnItemRepository;
 use Lottery\DebugInfrastructures\FileLotteryBoxRepository;
 use Lottery\DebugInfrastructures\FileLotteryItemRepository;
 use Lottery\Domain\Models\BoxItem\BoxItemRepositoryInterface;
+use Lottery\Domain\Models\DrawnItem\DrawnItemRepositoryInterface;
 use Lottery\Domain\Models\LotteryBox\LotteryBoxFactoryInterface;
 use Lottery\Domain\Models\LotteryBox\LotteryBoxRepositoryInterface;
 use Lottery\Domain\Models\LotteryItem\LotteryItemFactoryInterface;
@@ -59,6 +61,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(AddItemToBoxInputPort::class, AddItemToBoxInteractor::class);
 
         $this->app->bind(LotteryInputPort::class, LotteryInteractor::class);
+
+        $this->app->bind(DrawnItemRepositoryInterface::class, FileDrawnItemRepository::class);
     }
 
     /**
