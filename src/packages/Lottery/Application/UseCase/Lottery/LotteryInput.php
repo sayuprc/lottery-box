@@ -6,7 +6,9 @@ namespace Lottery\Application\UseCase\Lottery;
 
 class LotteryInput
 {
-    public function __construct(public readonly string $boxName)
-    {
+    public function __construct(
+        public readonly string $boxName,
+        public readonly bool $isUnique = false
+    ) {
     }
 }

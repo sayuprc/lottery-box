@@ -19,12 +19,17 @@ class LotteryController extends Controller
                 'required',
                 'string',
             ],
+            'isUnique' => [
+                'bool',
+            ],
         ]);
 
-        $result = $handler->handle(new LotteryInput($request->string('boxName')->toString()));
+        $result = $handler->handle(
+            new LotteryInput($request->string('boxName')->toString(), $request->boolean('isUnique'))
+        );
 
         if ($result->isErr()) {
-            return response()->json(['error' => $result->unwrapErr()], options:JSON_UNESCAPED_UNICODE);
+            return response()->json(['error' => $result->unwrapErr()], options: JSON_UNESCAPED_UNICODE);
         }
 
         return response()->json(['winning' => $result->unwrap()->itemName->value], options: JSON_UNESCAPED_UNICODE);

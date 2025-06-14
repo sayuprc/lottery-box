@@ -10,13 +10,14 @@ use Lottery\Application\UseCase\Lottery\LotteryInputPort;
 
 class Lottery extends Command
 {
-    protected $signature = 'lottery {boxName}';
+    protected $signature = 'lottery {boxName} {--u|unique}';
 
     protected $description = '抽選する';
 
     public function handle(LotteryInputPort $handler): int
     {
         $boxName = $this->argument('boxName');
+        $isUnique = (bool)$this->option('unique');
 
         if (! is_string($boxName) || mb_trim($boxName) === '') {
             $this->error('抽選箱名を入力してください。');
@@ -24,7 +25,7 @@ class Lottery extends Command
             return Command::FAILURE;
         }
 
-        $result = $handler->handle(new LotteryInput($boxName));
+        $result = $handler->handle(new LotteryInput($boxName, $isUnique));
 
         if ($result->isErr()) {
             $this->error($result->unwrapErr());

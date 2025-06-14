@@ -51,7 +51,6 @@ class CreateBoxInteractorTest extends TestCase
             ->andReturnUsing(fn () => new LotteryBox(
                 new BoxId($id),
                 new BoxName($name),
-                []
             ))
             ->once();
 
@@ -86,7 +85,6 @@ class CreateBoxInteractorTest extends TestCase
             ->andReturnUsing(fn () => new LotteryBox(
                 new BoxId($id),
                 new BoxName($name),
-                []
             ))
             ->once();
 
