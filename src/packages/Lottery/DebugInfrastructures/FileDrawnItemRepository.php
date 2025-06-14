@@ -7,6 +7,7 @@ namespace Lottery\DebugInfrastructures;
 use Lottery\Domain\Models\DrawnItem\DrawnItem;
 use Lottery\Domain\Models\DrawnItem\DrawnItemRepositoryInterface;
 use Lottery\Domain\Models\LotteryBox\BoxId;
+use Lottery\Domain\Models\LotteryBox\ResetAt;
 use Support\Contracts\ConfigInterface;
 use Support\Debug\Repository\FileStore;
 
@@ -26,13 +27,21 @@ class FileDrawnItemRepository implements DrawnItemRepositoryInterface
         $this->filePath = $this->config->getString('debug.file.path') . '/' . self::FILE_NAME;
     }
 
-    public function getByBoxId(BoxId $boxId): array
+    public function getByBoxId(BoxId $boxId, ?ResetAt $resetAt = null): array
     {
         return array_values(
             array_filter(
                 $this->store->getAll($this->filePath),
-                fn (string $key) => str_starts_with($key, $boxId->value),
-                ARRAY_FILTER_USE_KEY
+                function (DrawnItem $drawnItem, string $key) use ($boxId, $resetAt) {
+                    $isMatchedKey = str_starts_with($key, $boxId->value);
+
+                    if (is_null($resetAt)) {
+                        return $isMatchedKey;
+                    }
+
+                    return $isMatchedKey && $resetAt->value < $drawnItem->drawnAt->value;
+                },
+                ARRAY_FILTER_USE_BOTH
             )
         );
     }

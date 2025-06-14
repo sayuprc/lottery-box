@@ -9,6 +9,7 @@ use Lottery\DebugInfrastructures\FileDrawnItemRepository;
 use Lottery\Domain\Models\DrawnItem\DrawnAt;
 use Lottery\Domain\Models\DrawnItem\DrawnItem;
 use Lottery\Domain\Models\LotteryBox\BoxId;
+use Lottery\Domain\Models\LotteryBox\ResetAt;
 use Lottery\Domain\Models\LotteryItem\ItemId;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Support\FileRepositoryTransaction;
@@ -40,6 +41,40 @@ class FileDrawnItemRepositoryTest extends TestCase
         $this->assertSame($boxId->value, $result[0]->boxId->value);
         $this->assertSame(str_repeat('b', 26), $result[0]->itemId->value);
         $this->assertSame('2025-06-14 14:26:30', $result[0]->drawnAt->value->format('Y-m-d H:i:s'));
+    }
+
+    #[Test]
+    public function getByBoxIdWithResetAt(): void
+    {
+        $boxId = new BoxId(str_repeat('a', 26));
+        $drawnItem1 = new DrawnItem(
+            $boxId,
+            new ItemId(str_repeat('b', 26)),
+            new DrawnAt(new DateTimeImmutable('2025-06-14 14:26:30')),
+        );
+        $drawnItem2 = new DrawnItem(
+            $boxId,
+            new ItemId(str_repeat('c', 26)),
+            new DrawnAt(new DateTimeImmutable('2025-06-15 14:26:30')),
+        );
+
+        $this->factory(
+            FileDrawnItemRepository::class,
+            $drawnItem1->boxId->value . '-' . $drawnItem1->itemId->value . '-' . $drawnItem1->drawnAt->value->format('YmdHis'),
+            $drawnItem1
+        );
+        $this->factory(
+            FileDrawnItemRepository::class,
+            $drawnItem2->boxId->value . '-' . $drawnItem2->itemId->value . '-' . $drawnItem2->drawnAt->value->format('YmdHis'),
+            $drawnItem2
+        );
+
+        $result = $this->getInstance()->getByBoxId($boxId, new ResetAt(new DateTimeImmutable('2025-06-15 10:00:00')));
+
+        $this->assertCount(1, $result);
+        $this->assertSame($boxId->value, $result[0]->boxId->value);
+        $this->assertSame(str_repeat('c', 26), $result[0]->itemId->value);
+        $this->assertSame('2025-06-15 14:26:30', $result[0]->drawnAt->value->format('Y-m-d H:i:s'));
     }
 
     #[Test]
